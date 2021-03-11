@@ -1,4 +1,4 @@
-function [radius, gamma, lambda, peakheight, streamx, height, loc] = processvortexcore(file, aoa, mode)
+function [radius, gamma, peakheight, streamx, height] = processvortexcore(file, aoa, mode)
 %%location lambda
 x = file.data(:,1);
 y = file.data(:,2);
@@ -23,13 +23,11 @@ end
 d = cos(aoa)*x - sin(aoa)*y;
 sd = cos(aoa)*sr{1} - sin(aoa)*sr{2};
 streamx = mean(sd(zstart:1:zend));
-loc = [z(1), d(1)];
 if mode==1
      figure;
     plot(sr{3},sd,'-b')
     hold on;
     plot(z,d,'.k')
-    plot(loc(1), loc(2),'or')
     axis([0 5 0 1])
     set(gca, 'XDir', 'reverse');
     set(gca, 'YDir', 'reverse');
@@ -40,19 +38,15 @@ end
 d = sin(aoa)*x + cos(aoa)*y;
 sd = sin(aoa)*sr{1} + cos(aoa)*sr{2};
 height = mean(sd(zstart:1:zend));
-locy = [z(1), d(1)];
 % wavelength
 [~, maxi] = max(sd(1:floor(0.3*length(x))));
-lambda=z(maxi) - z(1);
 peakheight = sd(maxi);
 if mode==4
 %     figure;
     plot(sr{3},sd,'-b')
     hold on;
     plot(z,d,'.k')
-    plot(locy(1), locy(2),'or')
-    plot(sr{3}(maxi), sd(maxi), 'og')
-    axis([0 5 0 0.6])
+%     axis([0 5 0 0.6])
     set(gca, 'XDir', 'reverse');
     xlabel('z')
     ylabel('y')

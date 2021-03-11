@@ -1,4 +1,4 @@
-function [lambda, secamp, zmin, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh)
+function [lambda, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, mode)
 %trim vortex core data
 % first find the peak in height direction
 z = file.data(:,3);
@@ -53,17 +53,21 @@ if acme(lenacme,2)>acme(lenacme-1,2)
 end
 file2.data = file.data(acme(ei, 1):length(z),:);
 lambda = z(acme(ei, 1)) - z(acme(min(ee,lenacme), 1));
+d = cos(aoa)*file.data(acme(ei,1), 1) - sin(aoa)*file.data(acme(ei,1), 2);
+loc = [file.data(acme(ei,1), 3), d];
 if lenacme>2
     secamp = file.data(acme(ei+1, 1), 2) - file.data(acme(ei+2, 1), 2);
 else
     secamp = thresh;
 end
 zmin = file.data(acme(ee, 1), 3);
-figure;
-plot(file.data(:,3), file.data(:,2),'b-')
-hold on;
-plot(file.data(acme(:,1),3), file.data(acme(:,1),2), 'o')
-plot([file.data(acme(ei,1),3), -lambda + file.data(acme(ei,1),3)], [file.data(acme(ei,1),2), file.data(acme(ei,1),2)], 'r-')
+if mode>0
+    figure;
+    plot(file.data(:,3), file.data(:,2),'b-')
+    hold on;
+    plot(file.data(acme(:,1),3), file.data(acme(:,1),2), 'o')
+    plot([file.data(acme(ei,1),3), -lambda + file.data(acme(ei,1),3)], [file.data(acme(ei,1),2), file.data(acme(ei,1),2)], 'r-')
+end
 end
 
 function acme = findacme(h)
