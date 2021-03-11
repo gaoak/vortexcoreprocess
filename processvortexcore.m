@@ -44,7 +44,7 @@ locy = [z(1), d(1)];
 % wavelength
 [~, maxi] = max(sd(1:floor(0.3*length(x))));
 lambda=z(maxi) - z(1);
-peakheight = sd(maxi)
+peakheight = sd(maxi);
 if mode==4
 %     figure;
     plot(sr{3},sd,'-b')

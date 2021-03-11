@@ -12,14 +12,17 @@ skip=1;
 aoa = 15/180.*pi;
 tT = 0.25 + [0:1:13]'*0.0625;
 clear endpoint wavel radius gamma;
-for nn=1:1:1
+for nn=1:1:3
+    thresh = 1;
     ns=nfile(nn,1);
     ne=nfile(nn,2);
-    for ii=ns:1:ne
+    for ii=ne:-1:ns
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar, @LEVcenterCond);
         aoa=15/180*pi;
-        cleanvortexcore(file, aoa, 0.03);
+        [lambda, secamp, file] = cleanvortexcore(file, aoa, 5., 2.5,thresh);
+        thresh = 0.5*secamp;
+        lambda
     end
 end
 %%

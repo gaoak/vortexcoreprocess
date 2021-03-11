@@ -15,21 +15,25 @@ tT = 0.25 + [0:1:13]'*0.0625;
 clear endpoint wavel radius gamma;
 mode = 4;
 % figure;
-for nn=2:1:2
+for nn=3:1:1
     if mode>0
         figure;
     end
     ns=nfile(nn,1);
     ne=nfile(nn,2);
-    for ii=ns:1:ne
+    thresh = 1.;
+    zmin = 2.5;
+    for ii=ne:-1:ns
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar);
-        file = cleanvortexcore(file, aoa, mode);
+        [la, secamp, zmin, file] = cleanvortexcore(file, aoa, 5., zmin,thresh);
+        zmin
+        thresh = 0.8 * secamp;
         [r, g, l, ph,x,h,loc] = processvortexcore(file, aoa, mode);
 %         title(num2str(ne))
         gamma(ii-ns+1, nn) = g;
         radius(ii-ns+1, nn) = r;
-        wavel(ii-ns+1, nn) = l;
+        wavel(ii-ns+1, nn) = la;
         streamx(ii-ns+1, nn) = x;
         height(ii-ns+1, nn) = h - naca0012(x);
         vortexheight(ii-ns+1, nn) = ph - naca0012(x);
