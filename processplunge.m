@@ -61,6 +61,7 @@ for nn=1:1:9
     vortexheight{nn} = tmpvortexheight';
 end
 %%
+plotsequence = [2,3,5,6,8,9];
 symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.'};
 legendlabel = {'Re 400, k 2, A/c 0.5', '1000, 2, 0.5', '10k, 2, 0.5',...
                '400, 2, 0.1', '1000, 2, 0.1', '10k, 2, 0.1',...
@@ -88,7 +89,7 @@ if savepng>0
     saveas(gcf, 'plunging/legend.png')
 end
 figure;
-for ii=1:1:ncases
+for ii=plotsequence
     plot(endpoint{ii}(:,1), endpoint{ii}(:,2), symbol{ii})
     hold on;
 end
@@ -211,7 +212,7 @@ if savepng>0
 end
 %%  wavelength
 figure
-for ii=1:1:ncases
+for ii=plotsequence
     plot(time{ii}, wavel{ii}, symbol{ii})
     hold on;
 end
