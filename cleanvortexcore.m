@@ -1,6 +1,8 @@
 function [lambda, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, mode)
 %trim vortex core data
 % first find the peak in height direction
+% loc is in wind frame
+% zmin is an update of zmin , should decrease monotonically
 z = file.data(:,3);
 zstart = 1;
 zend = 1;
@@ -32,6 +34,7 @@ while 1
     end
 end
 acme(:,1) = zstart-1+acme(:,1);
+acme = adjustend(acme, file.data(:,2));
 lenacme = length(acme);
 ei = 1;
 if acme(1,2)>acme(1+1,2)
@@ -105,14 +108,11 @@ end
 end
 
 function thresh = autothresh(acme)
-thresh = 0;
 nsize = length(acme);
-for ii=1:1:nsize-1
-    if abs(acme(ii+1,2) - acme(ii,2)) > thresh;
-        thresh = abs(acme(ii+1,2) - acme(ii,2));
-    end
-end
-thresh = thresh * 0.5;
+amp = abs(acme(2:nsize, 2) - acme(1:nsize-1, 2));
+[~, maxi] = max(amp);
+amp(maxi) = 0;
+thresh = max(amp);
 end
 
 function [flag, acme2] = trimacme(acme, thresh)
@@ -171,3 +171,16 @@ else
 end
 end
 
+function acme = adjustend(acme, y)
+if length(acme)==2
+    last = acme(2,1);
+    amp = abs(acme(1,2)-acme(2,2));
+    for ii=last:-1:2
+        if abs(y(ii)-y(ii-1)) > 5E-2*amp
+            acme(2,1) = ii;
+            acme(2,2) = y(ii);
+            break;
+        end
+    end
+end
+end

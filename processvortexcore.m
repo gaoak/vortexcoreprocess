@@ -1,5 +1,11 @@
 function [radius, gamma, peakheight, streamx, height] = processvortexcore(file, aoa, mode)
-%%location lambda
+%wind frame
+%aoa angle of attack of airfoil
+%gamma circulation
+%radius = sqrt(sigma1 *  sigma2)
+%streamx streamwise location of vortex column in wind frame
+%height vertical location of vortex column in wind frame (anti gravity)
+%peakheight is y of the peak
 x = file.data(:,1);
 y = file.data(:,2);
 z = file.data(:,3);
@@ -20,8 +26,8 @@ for ii=1:1:length(z)
     end
 end
 %% z-x plot
-d = cos(aoa)*x - sin(aoa)*y;
-sd = cos(aoa)*sr{1} - sin(aoa)*sr{2};
+d = x;
+sd = sr{1};
 streamx = mean(sd(zstart:1:zend));
 if mode==1
      figure;
@@ -35,8 +41,8 @@ if mode==1
     ylabel('x')
 end
 %% z-y plot
-d = sin(aoa)*x + cos(aoa)*y;
-sd = sin(aoa)*sr{1} + cos(aoa)*sr{2};
+d = y;
+sd = sr{2};
 height = mean(sd(zstart:1:zend));
 % wavelength
 [~, maxi] = max(sd(1:floor(0.3*length(x))));
@@ -57,7 +63,7 @@ r = sqrt(file.data(:,4) .* file.data(:,5));
 sr = smoothn({z',r'},'robust')';
 radius = mean(sr{2}(zstart:1:zend));
 if sd(1)>=0 && sd(1)<=1 && mode==2
-%     figure;
+    figure;
     plot(z,0*z+radius,'-k')
     hold on;
     plot(sr{1},sr{2},'-b')
