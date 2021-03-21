@@ -56,8 +56,10 @@ if acme(lenacme,2)>acme(lenacme-1,2)
 end
 file2.data = file.data(acme(ei, 1):length(z),:);
 lambda = z(acme(ei, 1)) - z(acme(min(ee,lenacme), 1));
-d = cos(aoa)*file.data(acme(ei,1), 1) - sin(aoa)*file.data(acme(ei,1), 2);
-loc = [file.data(acme(ei,1), 3), d];
+if length(acme)==2
+    lambda = nan;
+end
+loc = [file.data(acme(ei,1), 1) file.data(acme(ei,1), 2) file.data(acme(ei,1), 3)]';
 if lenacme>2
     secamp = file.data(acme(ei+1, 1), 2) - file.data(acme(ei+2, 1), 2);
 else

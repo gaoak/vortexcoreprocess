@@ -43,6 +43,7 @@ for nn=1:1:9
         tmpwavel(ii-ns+1) = la;
         tmpend(ii-ns+1, 1) = loc(1);
         tmpend(ii-ns+1, 2) = loc(2);
+        tmpend(ii-ns+1, 3) = loc(3);
         [r, g, ph, x, h] = processvortexcore(file, aoa, mode);
         tmpgamma(ii-ns+1) = g;
         tmpradius(ii-ns+1) = r;
@@ -61,7 +62,7 @@ for nn=1:1:9
     vortexheight{nn} = tmpvortexheight';
 end
 %%
-plotsequence = [2,3,5,6,8,9];
+plotsequence = [1, 2,3,5,6,8,9];
 symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.'};
 legendlabel = {'Re 400, k 2, A/c 0.5', '1000, 2, 0.5', '10k, 2, 0.5',...
                '400, 2, 0.1', '1000, 2, 0.1', '10k, 2, 0.1',...
@@ -90,7 +91,9 @@ if savepng>0
 end
 figure;
 for ii=plotsequence
-    plot(endpoint{ii}(:,1), endpoint{ii}(:,2), symbol{ii})
+    xprime = cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2);
+    zprime = endpoint{ii}(:,3);
+    plot(zprime, xprime, symbol{ii})
     hold on;
 end
 plot(5-exploc(:,2),exploc(:,1), '^k-')
@@ -123,6 +126,27 @@ title('vortex trajectory')
 pbaspect([1.6 0.6 1])
 if savepng>0
     saveas(gcf, 'plunging/trajectory.png')
+end
+%% vortex trajectory connect leg
+chord=[0:0.01:1];
+airfoil=naca0012(chord);
+for ii=1:1:ncases
+    figure
+    lenz = length(endpoint{ii});
+    for jj=1:1:lenz
+        plot([streamx{ii}(jj) endpoint{ii}(jj,1)], [height{ii}(jj) endpoint{ii}(jj,2)], symbol{ii})
+        hold on;
+    end
+    axis([0 1.5 -0.3 0.3])
+    plot(cos(aoa)*chord+sin(aoa)*airfoil, -sin(aoa)*chord+cos(aoa)*airfoil, 'k-')
+    plot(cos(aoa)*chord-sin(aoa)*airfoil, -sin(aoa)*chord-cos(aoa)*airfoil, 'k-')
+    xlabel('x/c')
+    ylabel('h/c')
+    title('vortex trajectory')
+    pbaspect([1.6 0.6 1])
+    if savepng>0
+        saveas(gcf, sprintf('plunging/trajectory%d.png', ii))
+    end
 end
 %% vortex streamwise location body frame
 figure;
