@@ -4,7 +4,7 @@ clear;
 clc;
 close all;
 setPlotParameters;
-savepng=1
+savepng=1;
 %%
 fileformat={...
     'Re400_k2_Ap5/R1_vcore%d.dat','Re1000_k2_Ap5/R1_vcore%d.dat','Re10k_k2_Ap5/R1_vcore%d.dat', ...
@@ -120,6 +120,7 @@ plot(cos(aoa)*chord-sin(aoa)*airfoil, -sin(aoa)*chord-cos(aoa)*airfoil, 'k-')
 xlabel('x/c')
 ylabel('h/c')
 title('vortex trajectory')
+pbaspect([1.6 0.6 1])
 if savepng>0
     saveas(gcf, 'plunging/trajectory.png')
 end
@@ -143,6 +144,7 @@ for ii=1:1:ncases
     plot(time{ii}, streamx{ii}, symbol{ii})
     hold on;
 end
+plot([0 2], [0 2], '-k')
 axis([0 2 0 1])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('tU/c')
@@ -216,7 +218,7 @@ for ii=plotsequence
     plot(time{ii}, wavel{ii}, symbol{ii})
     hold on;
 end
-axis([0 2 0 2])
+axis([0 2 0 1.5])
 % legend(legendlabel, 'Location', 'NorthWest')
 xlabel('tU/c')
 ylabel('\lambda/c')
@@ -238,3 +240,14 @@ title('peak y location')
 if savepng>0
     saveas(gcf, 'plunging/waveheight.png')
 end
+%% test data collapse
+figure
+for ii=plotsequence
+    plot(time{ii}, wavel{ii}./(sin(aoa)*streamx{ii} + cos(aoa)*height{ii}), symbol{ii})
+    hold on;
+end
+axis([0 2 0 6])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('tU/c')
+ylabel("\lambda/y'")
+title("wavelengh/y'")
