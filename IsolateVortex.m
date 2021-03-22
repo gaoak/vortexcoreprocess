@@ -3,6 +3,7 @@
 clc;
 close all;
 setPlotParameters;
+savepng=1;
 %%
 peakz = [6.792608691	6.801249506	6.945263088	7	7
 6.562186961	6.550665874	6.740763802	6.801249506	6.776042999
@@ -42,7 +43,7 @@ valleyy = [2.485979926	2.474458839	2.480219383	2.468698296	2.485479148
 2.448536395	2.431254765	2.471578568	2.339086073	2.420817436];
 %%
 Reynolds = [1000, 2000, 1000, 1000, 1000];
-Radius =   [0.05, 0.05, 0.08, 0.05,0.05];
+Radius =   1.58*[0.05, 0.05, 0.08, 0.05,0.05];
 Height =   [0.2,  0.2,  0.2,  0.4, 0.2];
 Gamma =    [1.,   1.,   1.,   1., 1.];
 Ratio = Radius./Height;
@@ -60,7 +61,103 @@ for ii=DS
     hold on;
 end
  legend(legendlabel, 'Location', 'Best');
- %% vortex peak location
+ if savepng>0
+    saveas(gcf, 'isolate/legend.png')
+ end
+%% wave amplitude / disturbance height
+amp = (peaky - valleyy);
+figure;
+for ii=DS
+    st = time*Gamma(ii)/Radius(ii)/Radius(ii);
+    sz = amp(:, ii)./Height(ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+xlabel('t \Gamma/r^2')
+ylabel('\Lambda/h')
+title('wave amplitude/disturbance height')
+axis([0 800 0 1])
+if savepng>0
+    saveas(gcf, 'isolate/amp_height.png')
+end
+%% wave length / wave amplitude
+amp = (peaky - valleyy);
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*Gamma(ii)/Radius(ii)/Radius(ii);
+    sz = dispz(:, ii)./amp(:,ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+plot([0 800], [3 3], 'r--')
+plot([0 800], [4 4], 'r--')
+plot([0 800], [5 5], 'r--')
+xlabel('t \Gamma/r^2')
+ylabel('\lambda/\Lambda')
+title('wavelength/peak-peak wave amplitude')
+axis([0 800 0 8])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_amp.png')
+end
+%% wave length / intial disturbance heihgt
+amp = (peaky - valleyy);
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*Gamma(ii)/Radius(ii)/Radius(ii);
+    sz = dispz(:, ii)./Height(ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+plot([0 800], [3 3], 'r--')
+plot([0 800], [4 4], 'r--')
+plot([0 800], [5 5], 'r--')
+xlabel('t \Gamma/r^2')
+ylabel('\lambda/h')
+title('wave length/disturbance height')
+axis([0 800 0 8])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_heihgt.png')
+end
+%% wave length / radius
+amp = (peaky - valleyy);
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*Gamma(ii)/Radius(ii)/Radius(ii);
+    sz = dispz(:, ii)./Radius(ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+xlabel('t \Gamma/r^2')
+ylabel('\lambda/r')
+title('wavelength/radius')
+axis([0 800 0 15])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_radius.png')
+end
+%% wave length / radius
+amp = (peaky - valleyy);
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*Gamma(ii)/Height(ii)/Height(ii);
+    sz = dispz(:, ii)./amp(:,ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+plot([0 60], [3 3], 'r--')
+plot([0 60], [4 4], 'r--')
+plot([0 60], [5 5], 'r--')
+xlabel('t \Gamma/h^2')
+ylabel('\lambda/\Lambda')
+title('wavelength/peak-peak wave amplitude')
+axis([0 60 0 8])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_amp.png')
+end
+%% vortex peak location
 dispz = valleyz;
 figure;
 for ii=DS
@@ -102,7 +199,7 @@ end
 xlabel('t\Gamma/h^2')
 ylabel('\lambda/h')
 axis([0 60 0 7])
-title('double peak to valley length')
+title('twice peak to valley length')
 %%
 dispz = peakz - valleyz;
 figure;
