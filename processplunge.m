@@ -1,6 +1,6 @@
 %%data in wind frame x, y
 %%body frame x', y'
-clear;
+% clear;
 clc;
 close all;
 setPlotParameters;
@@ -22,7 +22,7 @@ deltaT = 0.0625;
 nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
-clear endpoint wavel radius gamma;
+clear endpoint wavel radius gamma time;
 mode = 0;
 % figure;
 for nn=1:1:9
@@ -47,7 +47,7 @@ for nn=1:1:9
         tmpvortexheight(ii-ns+1) = ph;
         [r, g, x, h, ca] = processvortexcore(file, aoa, mode);
         tmpgamma(ii-ns+1) = g;
-        tmpradius(ii-ns+1) = r;
+        tmpradius(ii-ns+1) = 1.58 * r;
         tmpstreamx(ii-ns+1) = x;
         tmpheight(ii-ns+1) = h;
     end
@@ -226,7 +226,7 @@ end
 %% radius
 figure;
 for ii=1:1:ncases
-    plot(time{ii}, 1.58 * radius{ii}, symbol{ii})
+    plot(time{ii}, radius{ii}, symbol{ii})
     hold on;
 end
 hold off
@@ -264,16 +264,70 @@ xlabel('tU/c')
 ylabel('y/c')
 title('peak y location')
 if savepng>0
-    saveas(gcf, 'plunging/waveheight.png')
+    saveas(gcf, 'plunging/waveheigth.png')
 end
 %% test data collapse
 figure
 for ii=plotsequence
-    plot(time{ii}, wavel{ii}./(sin(aoa)*streamx{ii} + cos(aoa)*height{ii}), symbol{ii})
+    chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
+    chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
+    airfoily = naca0012(chordx);
+    plot(time{ii}, wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
-axis([0 2 0 6])
+axis([0 2 0 8])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('tU/c')
 ylabel("\lambda/y'")
-title("wavelengh/y'")
+title("wavelength/y'")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_distance.png')
+end
+%%
+figure
+for ii=plotsequence
+    chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
+    chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
+    airfoily = naca0012(chordx);
+    plot(streamx{ii}, wavel{ii}./(chordy - airfoily), symbol{ii})
+    hold on;
+end
+plot([0 1], [3 3], 'r--')
+plot([0 1], [4 4], 'r--')
+plot([0 1], [5 5], 'r--')
+axis([0 1 0 8])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('x/c')
+ylabel("\lambda/y'")
+title("wavelength/y'")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_distance_x.png')
+end
+%% test data collapse
+figure
+for ii=plotsequence
+    plot(time{ii}, wavel{ii}./radius{ii}, symbol{ii})
+    hold on;
+end
+axis([0 2 0 15])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('tU/c')
+ylabel("\lambda/r")
+title("wavelength/r")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_radius.png')
+end
+%%
+figure
+for ii=plotsequence
+    plot(streamx{ii}, wavel{ii}./radius{ii}, symbol{ii})
+    hold on;
+end
+axis([0 1 0 15])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('x/c')
+ylabel("\lambda/r")
+title("wavelength/r")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_radius_x.png')
+end
