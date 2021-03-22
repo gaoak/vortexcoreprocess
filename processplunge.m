@@ -23,9 +23,9 @@ nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
 clear endpoint wavel radius gamma;
-mode = 4;
+mode = 0;
 % figure;
-for nn=6:1:6
+for nn=1:1:9
 %     if mode>0
 %         figure;
 %     end
@@ -34,7 +34,7 @@ for nn=6:1:6
     thresh = 1.;
     zmin = 2.5;
     clear tmpvortexheight tmpwavel tmpend tmpgamma tmpradius tmpstreamx tmpheight
-    for ii=ne:-1:ne
+    for ii=ne:-1:ns
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar);
         [la, ph, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, mode);
@@ -45,7 +45,7 @@ for nn=6:1:6
         tmpend(ii-ns+1, 2) = loc(2);
         tmpend(ii-ns+1, 3) = loc(3);
         tmpvortexheight(ii-ns+1) = ph;
-        [r, g, x, h] = processvortexcore(file, aoa, mode);
+        [r, g, x, h, ca] = processvortexcore(file, aoa, mode);
         tmpgamma(ii-ns+1) = g;
         tmpradius(ii-ns+1) = r;
         tmpstreamx(ii-ns+1) = x;
@@ -85,7 +85,7 @@ for ii=1:1:ncases
     hold on;
 end
 plot(0,0, '^k-')
-legend({legendlabel{:} '10k, 0.5, exp'}, 'Location', 'SouthWest')
+legend({legendlabel{:} '10k, 0.5, exp'}, 'Location', 'Best')
 if savepng>0
     saveas(gcf, 'plunging/legend.png')
 end
@@ -124,6 +124,7 @@ xlabel('x/c')
 ylabel('h/c')
 title('vortex trajectory')
 pbaspect([1.6 0.6 1])
+set(gcf,'position',[500,500,900,360])
 if savepng>0
     saveas(gcf, 'plunging/trajectory.png')
 end
@@ -144,6 +145,7 @@ for ii=1:1:ncases
     ylabel('h/c')
     title('vortex trajectory')
     pbaspect([1.6 0.6 1])
+    set(gcf,'position',[500,500,900,360])
     if savepng>0
         saveas(gcf, sprintf('plunging/trajectory%d.png', ii))
     end

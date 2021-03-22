@@ -12,11 +12,11 @@ y = file.data(:,2);
 z = file.data(:,3);
 sr = smoothn({x',y',z'},1,'robust')';
 %%angle at tip
-legi = 3;
+legi = 1;
 lege = 6;
 point = [sr{1}(legi) sr{2}(legi) sr{3}(legi)];
 dir = [sr{1}(lege) sr{2}(lege) sr{3}(lege)] - point;
-[sect, legcosangle] = intersectnaca0012(aoa, point, dir)
+[sect, legcosangle] = intersectnaca0012(aoa, point, dir);
 %% plane region
 zstart = 1;
 zend = 1;
