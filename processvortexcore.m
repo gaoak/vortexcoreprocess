@@ -1,4 +1,4 @@
-function [radius, gamma, peakheight, streamx, height] = processvortexcore(file, aoa, mode)
+function [radius, gamma, streamx, height, legcosangle] = processvortexcore(file, aoa, mode)
 %wind frame
 %aoa angle of attack of airfoil
 %gamma circulation
@@ -6,10 +6,17 @@ function [radius, gamma, peakheight, streamx, height] = processvortexcore(file, 
 %streamx streamwise location of vortex column in wind frame
 %height vertical location of vortex column in wind frame (anti gravity)
 %peakheight is y of the peak
+%the file has been cleaned so that the first point is the leg location
 x = file.data(:,1);
 y = file.data(:,2);
 z = file.data(:,3);
 sr = smoothn({x',y',z'},1,'robust')';
+%%angle at tip
+legi = 3;
+lege = 6;
+point = [sr{1}(legi) sr{2}(legi) sr{3}(legi)];
+dir = [sr{1}(lege) sr{2}(lege) sr{3}(lege)] - point;
+[sect, legcosangle] = intersectnaca0012(aoa, point, dir)
 %% plane region
 zstart = 1;
 zend = 1;
@@ -44,14 +51,12 @@ end
 d = y;
 sd = sr{2};
 height = mean(sd(zstart:1:zend));
-% wavelength
-[~, maxi] = max(sd(1:floor(0.3*length(x))));
-peakheight = sd(maxi);
 if mode==4
 %     figure;
     plot(sr{3},sd,'-b')
     hold on;
     plot(z,d,'.k')
+    plot(sect(3), sect(2), '^r')
 %     axis([0 5 0 0.6])
     set(gca, 'XDir', 'reverse');
     xlabel('z')
@@ -73,6 +78,7 @@ if sd(1)>=0 && sd(1)<=1 && mode==2
     ylabel('r')
     axis([0 5 0 0.12])
 end
+%%circulation
 g = file.data(:,6);
 sg = smoothn({z',g'},'robust')';
 gamma = mean(sg{2}(zstart:1:zend));

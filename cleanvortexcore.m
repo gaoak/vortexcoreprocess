@@ -1,8 +1,8 @@
-function [lambda, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, mode)
+function [lambda, peakheight, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, mode)
 %trim vortex core data
 % first find the peak in height direction
-% loc is in wind frame
-% zmin is an update of zmin , should decrease monotonically
+% loc is in wind frame, first valley starting from zmax to zmin
+% zmin is an update of zmin (last valley), should decrease monotonically
 z = file.data(:,3);
 zstart = 1;
 zend = 1;
@@ -36,11 +36,12 @@ end
 acme(:,1) = zstart-1+acme(:,1);
 acme = adjustend(acme, file.data(:,2));
 lenacme = length(acme);
+%%find first valley (ei) and last valley (ee)
 ei = 1;
 if acme(1,2)>acme(1+1,2)
     for ii=2:1:length(acme)-1
         if acme(ii,2)<acme(ii+1,2) && acme(ii,2)<acme(ii-1,2)
-            ei = ii;
+            ei = ii; %first valley
             break;
         end
     end
@@ -49,13 +50,14 @@ ee = lenacme;
 if acme(lenacme,2)>acme(lenacme-1,2)
     for ii=length(acme)-1:-1:2
         if acme(ii,2)<acme(ii+1,2) && acme(ii,2)<acme(ii-1,2)
-            ee = ii;
+            ee = ii; %last valley
             break;
         end
     end
 end
 file2.data = file.data(acme(ei, 1):length(z),:);
-lambda = z(acme(ei, 1)) - z(acme(min(ee,lenacme), 1));
+lambda = z(acme(ei, 1)) - z(acme(ee, 1));
+peakheight = max(file.data(acme(ei, 1):acme(ee, 1),2));
 if length(acme)==2
     lambda = nan;
 end
@@ -66,6 +68,7 @@ else
     secamp = thresh;
 end
 zmin = file.data(acme(ee, 1), 3);
+%%
 if mode>0
     figure;
     plot(file.data(:,3), file.data(:,2),'b-')

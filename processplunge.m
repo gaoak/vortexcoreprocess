@@ -23,9 +23,9 @@ nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
 clear endpoint wavel radius gamma;
-mode = 0;
+mode = 4;
 % figure;
-for nn=1:1:9
+for nn=6:1:6
 %     if mode>0
 %         figure;
 %     end
@@ -34,22 +34,22 @@ for nn=1:1:9
     thresh = 1.;
     zmin = 2.5;
     clear tmpvortexheight tmpwavel tmpend tmpgamma tmpradius tmpstreamx tmpheight
-    for ii=ne:-1:ns
+    for ii=ne:-1:ne
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar);
-        [la, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, mode);
+        [la, ph, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, mode);
         zmin = min(zmin, limitzmin(nn));
         thresh = thresratio(nn) * secamp;
         tmpwavel(ii-ns+1) = la;
         tmpend(ii-ns+1, 1) = loc(1);
         tmpend(ii-ns+1, 2) = loc(2);
         tmpend(ii-ns+1, 3) = loc(3);
-        [r, g, ph, x, h] = processvortexcore(file, aoa, mode);
+        tmpvortexheight(ii-ns+1) = ph;
+        [r, g, x, h] = processvortexcore(file, aoa, mode);
         tmpgamma(ii-ns+1) = g;
         tmpradius(ii-ns+1) = r;
         tmpstreamx(ii-ns+1) = x;
-        tmpheight(ii-ns+1) = h - 0*naca0012(x);
-        tmpvortexheight(ii-ns+1) = ph - 0*naca0012(x);
+        tmpheight(ii-ns+1) = h;
     end
     tT = ([ns:1:ne]'-filenstart(nn))*deltaT*pi/reducefreq(nn);
     time{nn} = tT;

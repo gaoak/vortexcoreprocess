@@ -31,3 +31,30 @@ sz = smoothn({x',y',z'},'robust')';
     set(gca, 'XDir', 'reverse');
     xlabel('z')
     ylabel('y')
+%%
+chord=[0.:0.01:1];
+aoa=10/180*pi;
+airfoil=naca0012(chord);
+[tx, ty] = naca0012ds(chord);
+dx = tx*cos(aoa) + ty*sin(aoa);
+dy = -tx*sin(aoa) + ty*cos(aoa);
+figure
+plot(chord*cos(aoa)+airfoil*sin(aoa), -chord*sin(aoa)+airfoil*cos(aoa), 'k-')
+hold on;
+plot(chord*cos(aoa)-airfoil*sin(aoa), -chord*sin(aoa)-airfoil*cos(aoa), 'k-')
+ds = 0.02;
+for ii=1:1:length(chord)
+    p1 = [chord(ii), airfoil(ii)];
+    p = [p1(1)*cos(aoa)+p1(2)*sin(aoa), -p1(1)*sin(aoa)+p1(2)*cos(aoa), 0];
+    p2 = p + ds*[-dy(ii), dx(ii), 0];
+    plot([p(1), p2(1)], [p(2), p2(2)], 'b.-')
+    [sect, cosangle] = intersectnaca0012(aoa, p, [-dy(ii) dx(ii) 0]);
+    ca(ii) = cosangle;
+    plot(sect(1), sect(2), '^r')
+end
+axis([0 1.5 -0.3 0.3])
+xlabel('x/c')
+ca'
+ylabel('h/c')
+title('vortex trajectory')
+pbaspect([1.6 0.6 1])
