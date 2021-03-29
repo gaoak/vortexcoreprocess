@@ -63,15 +63,15 @@ DS = [2,4,7,8, 5,6, 1,3];
 legendlabel = {'\Gamma/\nu 2000, \sigma/h 0.25','1000,0.25', '800, 0.25', '400, 0.25', '1000, 0.3', '1000, 0.4', 'no-slip wall 2000,0.25', 'no-slip wall 1000,0.25'};
 figure;
 for ii=DS
-    plot([0], [0]  , plottype{ii});
+    plot([0], [0], plottype{ii});
     hold on;
 end
- legend(legendlabel, 'Location', 'Best');
+legend(legendlabel, 'Location', 'Best');
 %% vortex column location
 columnx = (vortexx + 1.) / Height(1);
 figure;
 for ii=DS
-    plot(time, columnx(:,ii)  , plottype{ii});
+    plot(time, columnx(:,ii), plottype{ii});
     hold on;
 end
 plot([0 time(6)], [0 -1./4./pi*time(6)]  , 'r-');
@@ -155,7 +155,7 @@ axis([0 60 0 0.3])
 wavelen = (endpointz - waistz);
 figure;
 for ii=DS
-    plot(time, wavelen(:,ii) ./ Height(ii)  , plottype{ii});
+    plot(time, wavelen(:,ii) ./ Height(ii), plottype{ii});
     hold on;
 end
 plot([0 60], [3 3], 'r--')
@@ -167,6 +167,23 @@ title('L-vortex wavelength / h')
 axis([0 60 0 8])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_height.png')
+end
+%% wave length / height
+wavelen = (endpointz - waistz);
+figure;
+for ii=DS
+    plot(time*0 + Radius(ii) ./ Height(ii), wavelen(:,ii) ./ Height(ii)  , plottype{ii});
+    hold on;
+end
+% plot([0 60], [3 3], 'r--')
+% plot([0 60], [4 4], 'r--')
+% plot([0 60], [5 5], 'r--')
+xlabel('r/h')
+ylabel('\lambda/h')
+title('L-vortex wavelength / h')
+axis([0 0.8 0 8])
+if savepng>0
+    saveas(gcf, 'vortexmotion/wavelength_height_ah.png')
 end
 %% wave length / radius
 wavelen = (endpointz - waistz);
@@ -181,6 +198,23 @@ title('L-vortex wavelength / radius')
 axis([0 60 0 15])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_radius.png')
+end
+%% wave length / radius
+wavelen = (endpointz - waistz);
+figure;
+for ii=DS
+    plot(time*0 + Radius(ii) ./ Height(ii), wavelen(:,ii) ./ Radius(ii)  , plottype{ii});
+    hold on;
+end
+% plot([0 60], [3 3], 'r--')
+% plot([0 60], [4 4], 'r--')
+% plot([0 60], [5 5], 'r--')
+xlabel('r/h')
+ylabel('\lambda/r')
+title('L-vortex wavelength / radius')
+axis([0 0.8 0 15])
+if savepng>0
+    saveas(gcf, 'vortexmotion/wavelength_radius_ah.png')
 end
 %% comparision with plunging motion
 plungwavel = -[-1.42912000000000,-1.13581000000000,-1.27845000000000;-0.455640000000000,-0.817900000000000,-0.586080000000000;-0.512030000000000,-0.556390000000000,-0.376810000000000;-0.642340000000001,-0.645359999999999,-0.448070000000000;-0.668089999999999,-0.357440000000000,-0.465740000000000;-0.504239999999999,-0.392940000000000,-0.387659999999999;-0.512580000000000,-0.430530000000000,-0.612600000000000;-0.580350000000000,-0.429240000000000,-0.364320000000000;-0.566770000000000,-0.615850000000001,-0.232440000000000;-0.599340000000000,-0.409040000000000,-0.149410000000001;-0.615790000000000,-0.261830000000000,-0.0487500000000001;-0.497970000000000,-0.284440000000000,-0.272160000000000;-0.494590000000000,-0.290770000000000,-0.247810000000000;-0.483660000000000,-0.305510000000000,-0.218700000000000];

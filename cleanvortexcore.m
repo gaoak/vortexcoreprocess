@@ -65,7 +65,7 @@ loc = [file.data(acme(ei,1), 1) file.data(acme(ei,1), 2) file.data(acme(ei,1), 3
 if lenacme>2
     secamp = file.data(acme(ei+1, 1), 2) - file.data(acme(ei+2, 1), 2);
 else
-    secamp = thresh;
+    secamp = file.data(acme(2, 1), 2) - file.data(acme(1, 1), 2);
 end
 zmin = file.data(acme(ee, 1), 3);
 %%

@@ -1,21 +1,21 @@
 %%
 t = linspace(0,6*pi,1000);
-    x = sin(t) + 0.1*randn(size(t));
-    y = cos(t) + 0.1*randn(size(t));
-    z = t + 0.1*randn(size(t));
-    u = smoothn({x,y,z});
-    plot3(x,y,z,'r.',u{1},u{2},u{3},'k','linewidth',2)
-    axis tight square
+x = sin(t) + 0.1*randn(size(t));
+y = cos(t) + 0.1*randn(size(t));
+z = t + 0.1*randn(size(t));
+u = smoothn({x,y,z});
+plot3(x,y,z,'r.',u{1},u{2},u{3},'k','linewidth',2)
+axis tight square
 %%
 x = linspace(0,100,2^8);
-    y = cos(x/10)+(x/50).^2 + randn(size(x))/10;
-    y([70 75 80]) = [5.5 5 6];
-    z = smoothn(y); % Regular smoothing
-    zr = smoothn(y,'robust'); % Robust smoothing
-    subplot(121), plot(x,y,'r.',x,z,'k','LineWidth',2)
-    axis square, title('Regular smoothing')
-    subplot(122), plot(x,y,'r.',x,zr,'k','LineWidth',2)
-    axis square, title('Robust smoothing')
+y = cos(x/10)+(x/50).^2 + randn(size(x))/10;
+y([70 75 80]) = [5.5 5 6];
+z = smoothn(y); % Regular smoothing
+zr = smoothn(y,'robust'); % Robust smoothing
+subplot(121), plot(x,y,'r.',x,z,'k','LineWidth',2)
+axis square, title('Regular smoothing')
+subplot(122), plot(x,y,'r.',x,zr,'k','LineWidth',2)
+axis square, title('Robust smoothing')
 %%
 figure
 aoa = 15/180*pi;
@@ -58,3 +58,8 @@ ca'
 ylabel('h/c')
 title('vortex trajectory')
 pbaspect([1.6 0.6 1])
+%%
+Gamma=2;
+r = 0.08;
+v = Gamma / (2*pi*r);
+turn_over_time = 2*pi*r/v / (pi/2)

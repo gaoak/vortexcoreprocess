@@ -101,7 +101,6 @@ if savepng>0
     saveas(gcf, 'isolate/wavelength_amp.png')
 end
 %% wave length / intial disturbance heihgt
-amp = (peaky - valleyy);
 dispz = 2.*(peakz - valleyz);
 figure;
 for ii=DS
@@ -118,10 +117,25 @@ ylabel('\lambda/h')
 title('wave length/disturbance height')
 axis([0 800 0 8])
 if savepng>0
-    saveas(gcf, 'isolate/wavelength_heihgt.png')
+    saveas(gcf, 'isolate/wavelength_height.png')
+end
+%% wave length / intial disturbance heihgt
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*0 + Height(ii)/Radius(ii);
+    sz = dispz(:, ii)./Height(ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+xlabel('r/h')
+ylabel('\lambda/h')
+title('wave length/disturbance height')
+axis([0 6 0 8])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_height_rh.png')
 end
 %% wave length / radius
-amp = (peaky - valleyy);
 dispz = 2.*(peakz - valleyz);
 figure;
 for ii=DS
@@ -136,6 +150,22 @@ title('wavelength/radius')
 axis([0 800 0 15])
 if savepng>0
     saveas(gcf, 'isolate/wavelength_radius.png')
+end
+%% wave length / radius
+dispz = 2.*(peakz - valleyz);
+figure;
+for ii=DS
+    st = time*0 + Height(ii)/Radius(ii);
+    sz = dispz(:, ii)./Radius(ii);
+    plot(st, sz, plottype{ii});
+    hold on;
+end
+xlabel('a/h')
+ylabel('\lambda/r')
+title('wavelength/radius')
+axis([0 6 0 15])
+if savepng>0
+    saveas(gcf, 'isolate/wavelength_radius_rh.png')
 end
 %% wave length / radius
 amp = (peaky - valleyy);

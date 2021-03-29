@@ -4,28 +4,30 @@
 clc;
 close all;
 setPlotParameters;
-savepng=1;
+savepng=0;
 %%
 fileformat={...
     'Re400_k2_Ap5/R1_vcore%d.dat','Re1000_k2_Ap5/R1_vcore%d.dat','Re10k_k2_Ap5/R1_vcore%d.dat', ...
-    'Re400_k2_Ap1/R1_vcore%d.dat','Re1000_k2_Ap1/R1_vcore%d.dat','Re10k_k2_Ap1/R1_vcore%d.dat'...
-    'Re400_k3_Ap1/R1_vcore%d.dat','Re1000_k3_Ap1/R1_vcore%d.dat','Re10k_k3_Ap1/R1_vcore%d.dat'};
+    'Re400_k2_Ap1/R1_vcore%d.dat','Re1000_k2_Ap1/R1_vcore%d.dat','Re10k_k2_Ap1/R1_vcore%d.dat', ...
+    'Re400_k3_Ap1/R1_vcore%d.dat','Re1000_k3_Ap1/R1_vcore%d.dat','Re10k_k3_Ap1/R1_vcore%d.dat', ...
+    'Re10k_k2_Ap5_exp/R1_vcore%d.dat','Re10k_k2_Ap5_start/R1_vcore%d.dat'};
 ncases = length(fileformat);
 nfile=[109 122; 36, 49; 36 49;
         40  50; 39, 50;  5 29;
-        40  50; 40  49; 22 34];
-thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
-limitzmin = [5., 5., 5., 4., 5., 5., 5., 5., 5.];
-filenstart = [105, 32, 32, 32, 32, 0, 32, 32, 16];
-reducefreq = [2, 2, 2, 2, 2, 2, 3, 3, 3];
-deltaT = 0.0625;
+        40  50; 40  49; 22 34;
+         2   9;  4   18;];
+thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4];
+limitzmin = [5., 5., 5., 4., 5., 5., 5., 5., 5., 5., 5.];
+filenstart = [105, 32, 32, 32, 32, 0, 32, 32, 16, 0, 0];
+reducefreq = [2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2];
+deltaT = [0.0625 0.0625 0.0625   0.0625 0.0625 0.0625   0.0625 0.0625 0.0625  0.125 0.0625];
 nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
 clear endpoint wavel radius gamma time;
-mode = 0;
+mode = 4;
 % figure;
-for nn=1:1:9
+for nn=10:1:10
 %     if mode>0
 %         figure;
 %     end
@@ -108,6 +110,21 @@ title('LEV leg')
 if savepng>0
     saveas(gcf, 'plunging/vortexleg.png')
 end
+%% vortex trajectory
+chord=[0:0.001:1];
+aoa=15/180.*pi;
+airfoil=naca0012(chord);
+figure
+plot(cos(aoa)*chord+sin(aoa)*airfoil, -sin(aoa)*chord+cos(aoa)*airfoil, 'k-')
+hold on;
+plot(cos(aoa)*chord-sin(aoa)*airfoil, -sin(aoa)*chord-cos(aoa)*airfoil, 'k-')
+xlabel('x/c')
+ylabel('h/c')
+title('vortex trajectory')
+axis([-0.3 1.3 -0.4 0.2])
+pbaspect([1.6 0.6 1])
+set(gcf,'position',[500,500,900,360])
+saveas(gcf, 'plunging/airfoil.png')
 %% vortex trajectory
 chord=[0:0.01:1];
 airfoil=naca0012(chord);
@@ -303,6 +320,26 @@ title("wavelength/y'")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_distance_x.png')
 end
+%%
+figure
+for ii=plotsequence
+    chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
+    chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
+    airfoily = naca0012(chordx);
+    plot(radius{ii}./(chordy - airfoily), wavel{ii}./(chordy - airfoily), symbol{ii})
+    hold on;
+end
+% plot([0 1], [3 3], 'r--')
+% plot([0 1], [4 4], 'r--')
+% plot([0 1], [5 5], 'r--')
+axis([0 0.8 0 8])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('r/h')
+ylabel("\lambda/y'")
+title("wavelength/y'")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_distance_ah.png')
+end
 %% test data collapse
 figure
 for ii=plotsequence
@@ -330,4 +367,21 @@ ylabel("\lambda/r")
 title("wavelength/r")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_radius_x.png')
+end
+%%
+figure
+for ii=plotsequence
+    chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
+    chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
+    airfoily = naca0012(chordx);
+    plot(radius{ii}./(chordy - airfoily), wavel{ii}./radius{ii}, symbol{ii})
+    hold on;
+end
+axis([0 0.8 0 15])
+% legend(legendlabel, 'Location', 'Best')
+xlabel('r/h')
+ylabel("\lambda/r")
+title("wavelength/r")
+if savepng>0
+    saveas(gcf, 'plunging/wavelength_radius_ah.png')
 end
