@@ -4,7 +4,7 @@
 clc;
 close all;
 setPlotParameters;
-savepng=0;
+savepng=1;
 %%
 fileformat={...
     'Re400_k2_Ap5/R1_vcore%d.dat','Re1000_k2_Ap5/R1_vcore%d.dat','Re10k_k2_Ap5/R1_vcore%d.dat', ...
@@ -13,7 +13,7 @@ fileformat={...
     'Re10k_k2_Ap5_exp/R1_vcore%d.dat','Re10k_k2_Ap5_start/R1_vcore%d.dat'};
 ncases = length(fileformat);
 nfile=[109 122; 36, 49; 36 49;
-        40  50; 39, 50;  5 29;
+        40  50; 39, 50;  5 18;
         40  50; 40  49; 22 34;
          2   9;  4   18;];
 thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4];
@@ -25,9 +25,9 @@ nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
 clear endpoint wavel radius gamma time;
-mode = 4;
+mode = 0;
 % figure;
-for nn=10:1:10
+for nn=1:1:ncases
 %     if mode>0
 %         figure;
 %     end
@@ -35,7 +35,7 @@ for nn=10:1:10
     ne=nfile(nn,2);
     thresh = 1.;
     zmin = 2.5;
-    clear tmpvortexheight tmpwavel tmpend tmpgamma tmpradius tmpstreamx tmpheight
+    clear tmpvortexheight tmpwavel tmpend tmpgamma tmpradius tmpstreamx tmpheight tT
     for ii=ne:-1:ns
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar);
@@ -53,7 +53,7 @@ for nn=10:1:10
         tmpstreamx(ii-ns+1) = x;
         tmpheight(ii-ns+1) = h;
     end
-    tT = ([ns:1:ne]'-filenstart(nn))*deltaT*pi/reducefreq(nn);
+    tT = ([ns:1:ne]'-filenstart(nn))*deltaT(nn)*pi/reducefreq(nn);
     time{nn} = tT;
     endpoint{nn} = tmpend;
     gamma{nn} = tmpgamma';
@@ -64,11 +64,12 @@ for nn=10:1:10
     vortexheight{nn} = tmpvortexheight';
 end
 %%
-plotsequence = [1, 2,3,5,6,8,9];
-symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.'};
+plotsequence = [1,2,3, 5,6, 8,9, 10,11];
+symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.', '^r-', '+k-'};
 legendlabel = {'Re 400, k 2, A/c 0.5', '1000, 2, 0.5', '10k, 2, 0.5',...
                '400, 2, 0.1', '1000, 2, 0.1', '10k, 2, 0.1',...
-               '400, 3, 0.1', '1000, 3, 0.1', '10k, 3, 0.1'};
+               '400, 3, 0.1', '1000, 3, 0.1', '10k, 3, 0.1',...
+               '10k, 2, 0.5 exp', '10k, 2, 0.5, start'};
 exploc=[0.078137458	0.267899856
 0.110030298	0.373146229
 0.153085632	0.475203317
@@ -86,8 +87,8 @@ for ii=1:1:ncases
     plot(0,0, symbol{ii})
     hold on;
 end
-plot(0,0, '^k-')
-legend({legendlabel{:} '10k, 0.5, exp'}, 'Location', 'Best')
+plot(0, 0, '^k-')
+legend({legendlabel{:} '10k, 2, 0.5, exp'}, 'Location', 'SouthWest')
 if savepng>0
     saveas(gcf, 'plunging/legend.png')
 end
@@ -110,7 +111,7 @@ title('LEV leg')
 if savepng>0
     saveas(gcf, 'plunging/vortexleg.png')
 end
-%% vortex trajectory
+%% airfoil
 chord=[0:0.001:1];
 aoa=15/180.*pi;
 airfoil=naca0012(chord);
@@ -119,7 +120,7 @@ plot(cos(aoa)*chord+sin(aoa)*airfoil, -sin(aoa)*chord+cos(aoa)*airfoil, 'k-')
 hold on;
 plot(cos(aoa)*chord-sin(aoa)*airfoil, -sin(aoa)*chord-cos(aoa)*airfoil, 'k-')
 xlabel('x/c')
-ylabel('h/c')
+ylabel('y/c')
 title('vortex trajectory')
 axis([-0.3 1.3 -0.4 0.2])
 pbaspect([1.6 0.6 1])
@@ -133,12 +134,14 @@ for ii=1:1:ncases
     plot(streamx{ii}, height{ii}, symbol{ii})
     hold on;
 end
-axis([0 1.5 -0.3 0.3])
+axis([-0.2 1.3 -0.3 0.3])
 % legend(legendlabel, 'Location', 'Best')
 plot(cos(aoa)*chord+sin(aoa)*airfoil, -sin(aoa)*chord+cos(aoa)*airfoil, 'k-')
 plot(cos(aoa)*chord-sin(aoa)*airfoil, -sin(aoa)*chord-cos(aoa)*airfoil, 'k-')
 xlabel('x/c')
-ylabel('h/c')
+ylabel('y/c')
+text(-0.05, 0.2, 'A/c=0.5')
+text(0.6, -0.03, 'A/c=0.1')
 title('vortex trajectory')
 pbaspect([1.6 0.6 1])
 set(gcf,'position',[500,500,900,360])
@@ -192,6 +195,7 @@ axis([0 2 0 1])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('tU/c')
 ylabel('x/c')
+text(1.2, 0.3,'slope=0.52')
 title('x location')
 if savepng>0
     saveas(gcf, 'plunging/windxlocation.png')
@@ -236,6 +240,8 @@ axis([0 2 0 2.5])
 ylabel('\Gamma/Uc')
 xlabel('tU/c')
 title('circulation')
+text(0.1,2, 'A/c=0.5')
+text(1, 0.2, 'A/c=0.1')
 % legend(legendlabel, 'Location', 'Best')
 if savepng>0
     saveas(gcf, 'plunging/circulation.png')
@@ -248,7 +254,7 @@ for ii=1:1:ncases
 end
 hold off
 xlabel('tU/c')
-ylabel('r/c')
+ylabel('a/c')
 title('radius')
 axis([0 2 0 0.18])
 % legend(legendlabel, 'Location', 'Best')
@@ -295,8 +301,8 @@ end
 axis([0 2 0 8])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('tU/c')
-ylabel("\lambda/y'")
-title("wavelength/y'")
+ylabel("\lambda/h")
+title("wavelength/h")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_distance.png')
 end
@@ -309,14 +315,14 @@ for ii=plotsequence
     plot(streamx{ii}, wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
-plot([0 1], [3 3], 'r--')
-plot([0 1], [4 4], 'r--')
-plot([0 1], [5 5], 'r--')
-axis([0 1 0 8])
+% plot([0 1], [3 3], 'r--')
+% plot([0 1], [4 4], 'r--')
+% plot([0 1], [5 5], 'r--')
+axis([0 1 0 6])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('x/c')
-ylabel("\lambda/y'")
-title("wavelength/y'")
+ylabel("\lambda/h")
+title("wavelength/h")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_distance_x.png')
 end
@@ -332,11 +338,11 @@ end
 % plot([0 1], [3 3], 'r--')
 % plot([0 1], [4 4], 'r--')
 % plot([0 1], [5 5], 'r--')
-axis([0 0.8 0 8])
+axis([0 1 0 6])
 % legend(legendlabel, 'Location', 'Best')
-xlabel('r/h')
-ylabel("\lambda/y'")
-title("wavelength/y'")
+xlabel('a/h')
+ylabel("\lambda/h")
+title("wavelength/h")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_distance_ah.png')
 end
@@ -349,8 +355,8 @@ end
 axis([0 2 0 15])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('tU/c')
-ylabel("\lambda/r")
-title("wavelength/r")
+ylabel("\lambda/a")
+title("wavelength/a")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_radius.png')
 end
@@ -360,11 +366,11 @@ for ii=plotsequence
     plot(streamx{ii}, wavel{ii}./radius{ii}, symbol{ii})
     hold on;
 end
-axis([0 1 0 15])
+axis([0 1 0 14])
 % legend(legendlabel, 'Location', 'Best')
 xlabel('x/c')
-ylabel("\lambda/r")
-title("wavelength/r")
+ylabel("\lambda/a")
+title("wavelength/a")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_radius_x.png')
 end
@@ -377,11 +383,11 @@ for ii=plotsequence
     plot(radius{ii}./(chordy - airfoily), wavel{ii}./radius{ii}, symbol{ii})
     hold on;
 end
-axis([0 0.8 0 15])
+axis([0 1 0 14])
 % legend(legendlabel, 'Location', 'Best')
-xlabel('r/h')
-ylabel("\lambda/r")
-title("wavelength/r")
+xlabel('a/h')
+ylabel("\lambda/a")
+title("wavelength/a")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_radius_ah.png')
 end

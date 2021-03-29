@@ -90,9 +90,9 @@ for ii=DS
     plot(st, sz, plottype{ii});
     hold on;
 end
-plot([0 800], [3 3], 'r--')
-plot([0 800], [4 4], 'r--')
-plot([0 800], [5 5], 'r--')
+% plot([0 800], [3 3], 'r--')
+% plot([0 800], [4 4], 'r--')
+% plot([0 800], [5 5], 'r--')
 xlabel('t \Gamma/r^2')
 ylabel('\lambda/\Lambda')
 title('wavelength/peak-peak wave amplitude')
@@ -109,13 +109,13 @@ for ii=DS
     plot(st, sz, plottype{ii});
     hold on;
 end
-plot([0 800], [3 3], 'r--')
-plot([0 800], [4 4], 'r--')
-plot([0 800], [5 5], 'r--')
-xlabel('t \Gamma/r^2')
+% plot([0 800], [3 3], 'r--')
+% plot([0 800], [4 4], 'r--')
+% plot([0 800], [5 5], 'r--')
+xlabel('t \Gamma/a^2')
 ylabel('\lambda/h')
 title('wave length/disturbance height')
-axis([0 800 0 8])
+axis([0 800 0 6])
 if savepng>0
     saveas(gcf, 'isolate/wavelength_height.png')
 end
@@ -128,10 +128,10 @@ for ii=DS
     plot(st, sz, plottype{ii});
     hold on;
 end
-xlabel('r/h')
+xlabel('a/h')
 ylabel('\lambda/h')
 title('wave length/disturbance height')
-axis([0 6 0 8])
+axis([0 6 0 6])
 if savepng>0
     saveas(gcf, 'isolate/wavelength_height_rh.png')
 end
@@ -144,10 +144,10 @@ for ii=DS
     plot(st, sz, plottype{ii});
     hold on;
 end
-xlabel('t \Gamma/r^2')
-ylabel('\lambda/r')
+xlabel('t \Gamma/a^2')
+ylabel('\lambda/a')
 title('wavelength/radius')
-axis([0 800 0 15])
+axis([0 800 0 14])
 if savepng>0
     saveas(gcf, 'isolate/wavelength_radius.png')
 end
@@ -161,9 +161,9 @@ for ii=DS
     hold on;
 end
 xlabel('a/h')
-ylabel('\lambda/r')
+ylabel('\lambda/a')
 title('wavelength/radius')
-axis([0 6 0 15])
+axis([0 6 0 14])
 if savepng>0
     saveas(gcf, 'isolate/wavelength_radius_rh.png')
 end

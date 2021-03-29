@@ -58,7 +58,7 @@ time = [0:4:24]'*0.1/tscale;
 %+ Re 2000, ^ Re 1000, s Re 800, o Re 400
 % b r0.05, h0.2; r r0.06, h0.2; k r0.08, h0.2
 %vis --
-plottype = {'+b--', '+b', '^b--', '^b', '^r', '^k', 'sb', 'ob'};
+plottype = {'*b', '+b', '<b', '^b', '^r', '^k', 'sb', 'ob'};
 DS = [2,4,7,8, 5,6, 1,3];
 legendlabel = {'\Gamma/\nu 2000, \sigma/h 0.25','1000,0.25', '800, 0.25', '400, 0.25', '1000, 0.3', '1000, 0.4', 'no-slip wall 2000,0.25', 'no-slip wall 1000,0.25'};
 figure;
@@ -158,13 +158,13 @@ for ii=DS
     plot(time, wavelen(:,ii) ./ Height(ii), plottype{ii});
     hold on;
 end
-plot([0 60], [3 3], 'r--')
-plot([0 60], [4 4], 'r--')
-plot([0 60], [5 5], 'r--')
+% plot([0 60], [3 3], 'r--')
+% plot([0 60], [4 4], 'r--')
+% plot([0 60], [5 5], 'r--')
 xlabel('t\Gamma/h^2')
 ylabel('\lambda/h')
 title('L-vortex wavelength / h')
-axis([0 60 0 8])
+axis([0 60 0 6])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_height.png')
 end
@@ -172,16 +172,17 @@ end
 wavelen = (endpointz - waistz);
 figure;
 for ii=DS
-    plot(time*0 + Radius(ii) ./ Height(ii), wavelen(:,ii) ./ Height(ii)  , plottype{ii});
+    lent = length(time);
+    plot(time(2:lent)*0 + Radius(ii) ./ Height(ii), wavelen(2:lent,ii) ./ Height(ii)  , plottype{ii});
     hold on;
 end
 % plot([0 60], [3 3], 'r--')
 % plot([0 60], [4 4], 'r--')
 % plot([0 60], [5 5], 'r--')
-xlabel('r/h')
+xlabel('a/h')
 ylabel('\lambda/h')
 title('L-vortex wavelength / h')
-axis([0 0.8 0 8])
+axis([0 0.8 0 6])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_height_ah.png')
 end
@@ -193,9 +194,9 @@ for ii=DS
     hold on;
 end
 xlabel('t\Gamma/h^2')
-ylabel('\lambda/r')
+ylabel('\lambda/a')
 title('L-vortex wavelength / radius')
-axis([0 60 0 15])
+axis([0 60 0 14])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_radius.png')
 end
@@ -203,16 +204,17 @@ end
 wavelen = (endpointz - waistz);
 figure;
 for ii=DS
-    plot(time*0 + Radius(ii) ./ Height(ii), wavelen(:,ii) ./ Radius(ii)  , plottype{ii});
+    lenz = length(time);
+    plot(time(2:lenz)*0 + Radius(ii) ./ Height(ii), wavelen(2:lenz,ii) ./ Radius(ii)  , plottype{ii});
     hold on;
 end
 % plot([0 60], [3 3], 'r--')
 % plot([0 60], [4 4], 'r--')
 % plot([0 60], [5 5], 'r--')
-xlabel('r/h')
+xlabel('a/h')
 ylabel('\lambda/r')
 title('L-vortex wavelength / radius')
-axis([0 0.8 0 15])
+axis([0 0.8 0 14])
 if savepng>0
     saveas(gcf, 'vortexmotion/wavelength_radius_ah.png')
 end
