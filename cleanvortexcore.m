@@ -124,7 +124,7 @@ function [flag, acme2] = trimacme(acme, thresh)
 nsize = length(acme);
 flag = 0;
 for ii=1:1:nsize-1
-    if abs(acme(ii+1,2) - acme(ii,2)) > thresh;
+    if abs(acme(ii+1,2) - acme(ii,2)) >= thresh;
         sign = 1;
         if acme(ii+1,2) < acme(ii, 2);
             sign = -1;
