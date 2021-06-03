@@ -16,8 +16,8 @@ nfile=[109 122; 36, 49; 36 49;
         40  50; 39, 50;  5 18;
         40  50; 40  49; 22 34;
          2   9;  4   18;];
-thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4];
-limitzmin = [5., 5., 5., 4., 5., 5., 5., 5., 5., 5., 5.];
+thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.5, 0.4];
+limitzmin = [5., 5., 5., 4., 4., 5., 5., 5., 2.5, 5., 5.];
 filenstart = [105, 32, 32, 32, 32, 0, 32, 32, 16, 0, 0];
 reducefreq = [2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2];
 deltaT = [0.0625 0.0625 0.0625   0.0625 0.0625 0.0625   0.0625 0.0625 0.0625  0.125 0.0625];
@@ -25,9 +25,9 @@ nvar = 10;
 skip=1;
 aoa = 15/180.*pi;
 clear endpoint wavel radius gamma time;
-mode = 0;
+mode = 4;
 % figure;
-for nn=1:1:ncases
+for nn=[1 2 3]
 %     if mode>0
 %         figure;
 %     end
@@ -39,7 +39,10 @@ for nn=1:1:ncases
     for ii=ne:-1:ns
         filename = sprintf(fileformat{nn}, ii);
         file = loaddata(filename, skip, nvar);
-        [la, ph, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, mode);
+        % var = 0, use x-z for wavelength
+        % var = 1, use y-z for vortex leg
+        var = 0
+        [la, ph, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, var, mode);
         zmin = min(zmin, limitzmin(nn));
         thresh = thresratio(nn) * secamp;
         tmpwavel(ii-ns+1) = la;
@@ -63,6 +66,13 @@ for nn=1:1:ncases
     height{nn} = tmpheight';
     vortexheight{nn} = tmpvortexheight';
 end
+%% show data
+ii = nn;
+exportdata = [time{ii} cos(aoa)*streamx{ii} - sin(aoa)*height{ii} sin(aoa)*streamx{ii} + cos(aoa)*height{ii} ...
+    cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2) endpoint{ii}(:,3)...
+    gamma{ii} radius{ii}]
+exportdatawavel = [cos(aoa)*streamx{ii} - sin(aoa)*height{ii} wavel{ii}]
+vortexlegdata = [cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2) 5-endpoint{ii}(:,3)]
 %%
 plotsequence = [1,2,3, 5,6, 8,9, 10,11];
 symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.', '^r-', '+k-'};
@@ -93,7 +103,7 @@ if savepng>0
     saveas(gcf, 'plunging/legend.png')
 end
 figure;
-for ii=plotsequence
+for ii=3
     xprime = cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2);
     zprime = endpoint{ii}(:,3);
     plot(zprime, xprime, symbol{ii})
@@ -275,6 +285,20 @@ title('wavelength')
 if savepng>0
     saveas(gcf, 'plunging/wavelength.png')
 end
+%%  wavelength x
+figure
+for ii=[3]
+    plot(streamx{ii}, wavel{ii}, symbol{ii})
+    hold on;
+end
+axis([0 2 0 2])
+% legend(legendlabel, 'Location', 'NorthWest')
+xlabel('x/c')
+ylabel('\lambda/c')
+title('wavelength')
+if savepng>0
+    saveas(gcf, 'plunging/wavelength.png')
+end
 %% vortex height
 figure
 for ii=1:1:ncases
@@ -308,10 +332,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=3
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
     airfoily = naca0012(chordx);
+    exportdata = [chordx wavel{ii}./radius{ii}]
     plot(streamx{ii}, wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
@@ -328,10 +353,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=2
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
-    airfoily = naca0012(chordx);
+    airfoily = naca0012(chordx );
+    exportdata = [radius{ii}./(chordy - airfoily) wavel{ii}./(chordy - airfoily)]
     plot(radius{ii}./(chordy - airfoily), wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
@@ -376,10 +402,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=2
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
     airfoily = naca0012(chordx);
+    exportdata = [radius{ii}./(chordy - airfoily) wavel{ii}./radius{ii}]
     plot(radius{ii}./(chordy - airfoily), wavel{ii}./radius{ii}, symbol{ii})
     hold on;
 end
@@ -391,3 +418,10 @@ title("wavelength/a")
 if savepng>0
     saveas(gcf, 'plunging/wavelength_radius_ah.png')
 end
+
+%% 3D H1D simulation
+x = [1.19983677910772579 1.58982589771490757 1.78888284367065653 1.97575262966993104]'
+y = [-0.558142908959013306 -0.901414581066376286 -0.964381574174827394 -0.842509974610083257]'
+t = [1.75 2 2.125 2.25]'
+lambda=[1.4853 1.4853 1.4853 1.4853]'
+[x*cos(aoa) - y * sin(aoa) t lambda]

@@ -1,9 +1,14 @@
-function [lambda, peakheight, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, mode)
+function [lambda, peakheight, secamp, zmin, loc, file2] = cleanvortexcore(file, aoa, zmin, zmax, thresh, var, mode)
 %trim vortex core data
 % first find the peak in height direction
 % loc is in wind frame, first valley starting from zmax to zmin
 % zmin is an update of zmin (last valley), should decrease monotonically
 z = file.data(:,3);
+if var>0
+    signal = file.data(:,var);
+else
+    signal = file.data(:,1)*cos(aoa) - file.data(:,2)*sin(aoa);
+end
 zstart = 1;
 zend = 1;
 for ii=1:1:length(z)
@@ -18,13 +23,13 @@ for ii=1:1:length(z)
         break;
     end
 end
-if zend<zstart;
+if zend<zstart
     tmp = zstart;
     zstart = zend;
     zend = tmp;
 end
 index=[zstart:1:zend];
-y = file.data(index,2);
+y = signal(index);
 acme = findacme(y);
 thresh = min(thresh, autothresh(acme));
 while 1
@@ -34,7 +39,7 @@ while 1
     end
 end
 acme(:,1) = zstart-1+acme(:,1);
-acme = adjustend(acme, file.data(:,2));
+acme = adjustend(acme, signal);
 lenacme = length(acme);
 %%find first valley (ei) and last valley (ee)
 ei = 1;
@@ -56,25 +61,25 @@ if acme(lenacme,2)>acme(lenacme-1,2)
     end
 end
 file2.data = file.data(acme(ei, 1):length(z),:);
-lambda = z(acme(ei, 1)) - z(acme(ee, 1));
-peakheight = max(file.data(acme(ei, 1):acme(ee, 1),2));
+lambda = sqrt( (z(acme(ei, 1)) - z(acme(ee, 1)))^2 + (signal(acme(ei, 1))-signal(acme(ee, 1)))^2 );
+peakheight = max(signal(acme(ei, 1):acme(ee, 1)));
 if length(acme)==2
     lambda = nan;
 end
 loc = [file.data(acme(ei,1), 1) file.data(acme(ei,1), 2) file.data(acme(ei,1), 3)]';
-if lenacme>2
-    secamp = file.data(acme(ei+1, 1), 2) - file.data(acme(ei+2, 1), 2);
+if lenacme>=ei+2
+    secamp = signal(acme(ei+1, 1)) - signal(acme(ei+2, 1));
 else
-    secamp = file.data(acme(2, 1), 2) - file.data(acme(1, 1), 2);
+    secamp = signal(acme(2, 1)) - signal(acme(1, 1));
 end
 zmin = file.data(acme(ee, 1), 3);
 %%
 if mode>0
     figure;
-    plot(file.data(:,3), file.data(:,2),'b-')
+    plot(file.data(:,3), signal,'b-')
     hold on;
-    plot(file.data(acme(:,1),3), file.data(acme(:,1),2), 'o')
-    plot([file.data(acme(ei,1),3), -lambda + file.data(acme(ei,1),3)], [file.data(acme(ei,1),2), file.data(acme(ei,1),2)], 'r-')
+    plot(file.data(acme(:,1),3), signal(acme(:,1)), 'o')
+    plot([file.data(acme(ei,1),3), -lambda + file.data(acme(ei,1),3)], [signal(acme(ei,1)), signal(acme(ei,1))], 'r-')
 end
 end
 
