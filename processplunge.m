@@ -16,8 +16,9 @@ nfile=[109 122; 36, 49; 36 49;
         40  50; 39, 50;  5 18;
         40  50; 40  49; 22 34;
          2   9;  4   18;];
-thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.4];
-limitzmin = [5., 5., 5., 4., 4., 5., 5., 5., 5., 5., 5.];
+
+thresratio = [0.5, 0.5, 0.8, 0.5, 0.5, 0.5, 0.5, 0.5, 0.9, 0.5, 0.4];
+limitzmin = [5., 5., 5., 4., 4., 5., 5., 5., 2.5, 5., 5.];
 filenstart = [105, 32, 32, 32, 32, 0, 32, 32, 16, 0, 0];
 reducefreq = [2, 2, 2, 2, 2, 2, 3, 3, 3, 2, 2];
 deltaT = [0.0625 0.0625 0.0625   0.0625 0.0625 0.0625   0.0625 0.0625 0.0625  0.125 0.0625];
@@ -27,7 +28,7 @@ aoa = 15/180.*pi;
 clear endpoint wavel radius gamma time;
 mode = 4;
 % figure;
-for nn=[9]
+for nn=[1 2 3]
 %     if mode>0
 %         figure;
 %     end
@@ -41,7 +42,7 @@ for nn=[9]
         file = loaddata(filename, skip, nvar);
         % var = 0, use x-z for wavelength
         % var = 1, use y-z for vortex leg
-        var = 1
+        var = 0
         [la, ph, secamp, zmin, loc, file] = cleanvortexcore(file, aoa, 5., zmin,thresh, var, mode);
         zmin = min(zmin, limitzmin(nn));
         thresh = thresratio(nn) * secamp;
@@ -67,11 +68,12 @@ for nn=[9]
     vortexheight{nn} = tmpvortexheight';
 end
 %% show data
-ii = 6;
+ii = nn;
 exportdata = [time{ii} cos(aoa)*streamx{ii} - sin(aoa)*height{ii} sin(aoa)*streamx{ii} + cos(aoa)*height{ii} ...
     cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2) endpoint{ii}(:,3)...
     gamma{ii} radius{ii}]
-exportdatawavel = [time{ii} wavel{ii}]
+exportdatawavel = [cos(aoa)*streamx{ii} - sin(aoa)*height{ii} wavel{ii}]
+vortexlegdata = [cos(aoa)*endpoint{ii}(:,1) - sin(aoa)*endpoint{ii}(:,2) 5-endpoint{ii}(:,3)]
 %%
 plotsequence = [1,2,3, 5,6, 8,9, 10,11];
 symbol = {'og-', 'sb-', 'vk-',  'og--', 'sb--', 'vk--', 'og-.', 'sb-.', 'vk-.', '^r-', '+k-'};
@@ -331,10 +333,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=3
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
     airfoily = naca0012(chordx);
+    exportdata = [chordx wavel{ii}./radius{ii}]
     plot(streamx{ii}, wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
@@ -351,10 +354,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=2
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
-    airfoily = naca0012(chordx);
+    airfoily = naca0012(chordx );
+    exportdata = [radius{ii}./(chordy - airfoily) wavel{ii}./(chordy - airfoily)]
     plot(radius{ii}./(chordy - airfoily), wavel{ii}./(chordy - airfoily), symbol{ii})
     hold on;
 end
@@ -399,10 +403,11 @@ if savepng>0
 end
 %%
 figure
-for ii=plotsequence
+for ii=2
     chordx = cos(aoa)*streamx{ii} - sin(aoa)*height{ii};
     chordy = sin(aoa)*streamx{ii} + cos(aoa)*height{ii};
     airfoily = naca0012(chordx);
+    exportdata = [radius{ii}./(chordy - airfoily) wavel{ii}./radius{ii}]
     plot(radius{ii}./(chordy - airfoily), wavel{ii}./radius{ii}, symbol{ii})
     hold on;
 end
