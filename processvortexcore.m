@@ -37,13 +37,13 @@ d = x;
 sd = sr{1};
 streamx = mean(sd(zstart:1:zend));
 if mode==1
-     figure;
+%      figure;
     plot(sr{3},sd,'-b')
     hold on;
     plot(z,d,'.k')
     axis([0 5 0 1])
     set(gca, 'XDir', 'reverse');
-    set(gca, 'YDir', 'reverse');
+%     set(gca, 'YDir', 'reverse');
     xlabel('z')
     ylabel('x')
 end
@@ -53,14 +53,14 @@ sd = sr{2};
 height = mean(sd(zstart:1:zend));
 if mode==4
 %     figure;
-    plot(sr{3},sd,'-b')
+    plot(sr{3},sd,'-k')
     hold on;
     plot(z,d,'.k')
     plot(sect(3), sect(2), '^r')
 %     axis([0 5 0 0.6])
     set(gca, 'XDir', 'reverse');
     xlabel('z')
-    ylabel('y')
+    ylabel('y,x')
 %     pbaspect([5 0.6 1])
 end
 %% radius
